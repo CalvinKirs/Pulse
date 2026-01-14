@@ -5,8 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-8%2B-orange.svg)](https://www.oracle.com/java/)
 
-Pulse is a collection of lightweight, portable connectivity testing tools for distributed systems. Built for simplicity — no complex setup, no heavy dependencies, just drop-in tools that work.
-
+Pulse is a lightweight tool for testing connectivity to infrastructure dependencies such as authentication services and object storage. Built for simplicity — no complex setup, no heavy dependencies, just drop-in tools that work.
 ## Philosophy
 
 - **Lightweight**: Minimal dependencies, single JAR deployment
@@ -86,4 +85,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*Pulse — Feel the heartbeat of your distributed systems.*
