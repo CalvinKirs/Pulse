@@ -1,0 +1,13 @@
+# =============================================================================
+# Kerberos Connectivity Diagnostic Tool - Configuration
+# =============================================================================
+
+# Required: Path to the Kerberos keytab file
+keytabPath=/Users/calvinkirs/conf/hdfs.keytab
+
+# Required: Kerberos principal name (must exist in keytab)
+# Format: <service>/<hostname>@<REALM> or <username>@<REALM>
+principal=hdfs/master-1-1.c-898888.us-east1.emr.ck.com@EMR.C-678909876567.COM
+
+# Required: Path to krb5.conf file
+krb5ConfPath=/Users/calvinkirs/conf/krb5.conf
