@@ -18,6 +18,7 @@ Pulse is a lightweight tool for testing connectivity to infrastructure dependenc
 | Module | Description |
 |--------|-------------|
 | [kerberos-tools](./kerberos-tools) | Kerberos authentication & connectivity diagnostics |
+| [s3-tools](./s3-tools) | S3 credential-source and permission diagnostics |
 | common | Shared utilities across all tools |
 
 ## Quick Start
@@ -56,6 +57,9 @@ Pulse/
 ├── kerberos-tools/           # Kerberos diagnostic tool
 │   ├── src/main/java/
 │   └── src/main/resources/
+├── s3-tools/                 # S3 connectivity diagnostic tool
+│   ├── src/main/java/
+│   └── src/main/resources/
 ├── pom.xml                   # Parent POM
 └── LICENSE
 ```
@@ -84,4 +88,3 @@ Please feel free to submit issues and pull requests.
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
