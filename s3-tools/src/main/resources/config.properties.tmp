@@ -1,0 +1,53 @@
+# Required: either s3Path OR bucket
+s3Path=s3://your-bucket/your/prefix
+
+# Optional when s3Path is provided
+# bucket=your-bucket
+# prefix=your/prefix
+
+# AWS region for S3 and STS (default: us-east-1)
+region=us-east-1
+
+# Optional custom S3 endpoint, for example MinIO or VPC endpoint
+# endpoint=https://s3.us-east-1.amazonaws.com
+
+# Whether to force path style addressing (default: false)
+pathStyle=false
+
+# Optional explicit path for ListObjectsV2 ("ls") permission check.
+# If omitted, tool uses prefix/s3Path.
+# lsPath=s3://your-bucket/another/prefix
+# lsPath=another/prefix
+
+# authMode:
+#   auto | static | web_identity | instance_profile | profile | env | system_properties | container
+# NOTE: authMode=auto means pure default-chain probing. No credentials are required in this file.
+# NOTE: In authMode=auto, static/profile/web-identity override fields are ignored.
+# NOTE: If roleArn is configured, auto switches to explicit STS base-source probing:
+#       system_properties / env / profile / container / instance_profile, each then STS AssumeRole.
+authMode=auto
+
+# ---------- static credentials (only for authMode=static) ----------
+# accessKeyId=AKIA...
+# secretAccessKey=...
+# sessionToken=...
+
+# ---------- profile credentials (optional; SDK default profile is used if unset) ----------
+# profileName=default
+
+# ---------- assume-role / web identity ----------
+# roleArn/roleSessionName apply globally.
+# For non-web-identity auth modes, roleArn enables AssumeRole over the base credential source.
+# For authMode=web_identity, roleArn is used with OIDC token file.
+# SDK can read these from environment automatically:
+# AWS_WEB_IDENTITY_TOKEN_FILE / AWS_ROLE_ARN / AWS_ROLE_SESSION_NAME
+# webIdentityTokenFile=/var/run/secrets/eks.amazonaws.com/serviceaccount/token
+# roleArn=arn:aws:iam::123456789012:role/your-role
+# roleSessionName=pulse-s3-check
+
+# Timeout per AWS API call (seconds), default: 8
+timeoutSeconds=8
+
+# Optional explicit key used for PutObject permission test.
+# If omitted, the tool creates a temporary object under prefix.
+# putObjectKey=your/prefix/pulse-test.txt
