@@ -1,0 +1,7 @@
+{
+  "name": "azure-blob-connectivity-client",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "azure-storage-blobs-cpp"
+  ]
+}
