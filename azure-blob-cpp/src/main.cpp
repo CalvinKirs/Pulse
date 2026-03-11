@@ -1,5 +1,6 @@
 #include <azure/core/diagnostics/logger.hpp>
 #include <azure/core/http/http_status_code.hpp>
+#include <azure/core/http/curl_transport.hpp>
 #include <azure/storage/blobs.hpp>
 #include <azure/storage/common/storage_credential.hpp>
 
@@ -22,6 +23,8 @@ struct Options {
     std::string container_url;
     std::string mode {"basic"};
     std::string prefix {"doris-connectivity-check/"};
+    std::string ca_info;
+    std::string ca_path;
     int log_level {3};
 };
 
@@ -90,6 +93,8 @@ void print_usage(const char* prog) {
               << "  --container-url <full_url>   e.g. https://acct.blob.core.windows.net/container\n"
               << "  --mode <basic|rw>            default: basic\n"
               << "  --prefix <blob_prefix>       default: doris-connectivity-check/\n"
+              << "  --ca-info <pem_file>         optional curl CA bundle file path\n"
+              << "  --ca-path <pem_dir>          optional curl CA cert directory\n"
               << "  --log-level <0-4>            Azure SDK log level, default: 3\n\n"
               << "Examples:\n"
               << "  " << prog
@@ -151,6 +156,12 @@ bool parse_args(int argc, char** argv, Options* opts, std::string* err) {
     }
     if (args.find("prefix") != args.end()) {
         opts->prefix = args["prefix"];
+    }
+    if (args.find("ca-info") != args.end()) {
+        opts->ca_info = args["ca-info"];
+    }
+    if (args.find("ca-path") != args.end()) {
+        opts->ca_path = args["ca-path"];
     }
     if (args.find("log-level") != args.end()) {
         try {
@@ -260,6 +271,17 @@ int main(int argc, char** argv) {
                 opts.account_name, opts.account_key);
         Azure::Storage::Blobs::BlobClientOptions client_options;
         client_options.Retry.StatusCodes.insert(Azure::Core::Http::HttpStatusCode::TooManyRequests);
+        if (!opts.ca_info.empty() || !opts.ca_path.empty()) {
+            Azure::Core::Http::CurlTransportOptions curl_options;
+            if (!opts.ca_info.empty()) {
+                curl_options.CAInfo = opts.ca_info;
+            }
+            if (!opts.ca_path.empty()) {
+                curl_options.CAPath = opts.ca_path;
+            }
+            client_options.Transport.Transport =
+                    std::make_shared<Azure::Core::Http::CurlTransport>(curl_options);
+        }
 
         Azure::Storage::Blobs::BlobContainerClient container_client(container_url, credential,
                                                                     client_options);
