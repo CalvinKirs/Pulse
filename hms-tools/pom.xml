@@ -18,7 +18,6 @@
         <commons-cli.version>1.4</commons-cli.version>
         <hadoop.version>3.3.6</hadoop.version>
         <hive.version>3.1.3</hive.version>
-        <hive.common.version>2.3.9</hive.common.version>
     </properties>
 
     <dependencies>
@@ -99,7 +98,7 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-common</artifactId>
-            <version>${hive.common.version}</version>
+            <version>${hive.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
