@@ -1,0 +1,6 @@
+.idea/
+*.iml
+**/target/
+azure-blob-cpp/.local/
+azure-blob-cpp/build/
+azure-blob-cpp/dist/

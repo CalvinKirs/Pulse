@@ -12,6 +12,7 @@
         <module>kerberos-tools</module>
         <module>common</module>
         <module>s3-tools</module>
+        <module>gcs-tools</module>
     </modules>
     <licenses>
         <license>

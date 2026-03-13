@@ -1,0 +1,16 @@
+# Required
+gcsPath=gs://your-bucket/your-prefix
+ak=your-hmac-access-key
+sk=your-hmac-secret-key
+
+# Optional
+# endpoint=https://storage.googleapis.com
+# region=auto
+# lsPath=gs://your-bucket/another-prefix
+# pathStyle=true
+# timeoutSeconds=10
+
+# Optional: enable this if you also want to validate write permission.
+# The tool writes a small object and then deletes it immediately.
+# writeCheckEnabled=true
+# putObjectKey=your-prefix/pulse-gcs-connectivity-check.txt

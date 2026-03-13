@@ -4,87 +4,102 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-8%2B-orange.svg)](https://www.oracle.com/java/)
+[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
 
-Pulse is a lightweight tool for testing connectivity to infrastructure dependencies such as authentication services and object storage. Built for simplicity — no complex setup, no heavy dependencies, just drop-in tools that work.
-## Philosophy
+Pulse is a repo of small connectivity diagnostics for infrastructure dependencies such as Kerberos and object storage.
+It currently contains two implementation tracks:
 
-- **Lightweight**: Minimal dependencies, single JAR deployment
-- **Portable**: Works across environments without installation
-- **Actionable**: Clear diagnostics with specific fix suggestions
-- **Fast**: Get answers in seconds, not minutes
+- **Java tools**: Maven-managed diagnostic JARs for Kerberos, S3, and GCS
+- **C++ tool**: a standalone Azure Blob client built with CMake/vcpkg
 
-## Modules
+This distinction should be explicit in the README. The build, packaging, and runtime model are different enough that users should not have to infer it from the directory names.
 
-| Module | Description |
-|--------|-------------|
-| [kerberos-tools](./kerberos-tools) | Kerberos authentication & connectivity diagnostics |
-| [s3-tools](./s3-tools) | S3 credential-source and permission diagnostics |
-| common | Shared utilities across all tools |
+## Design Goals
 
-## Quick Start
+- **Lightweight**: runnable artifacts with minimal setup
+- **Portable**: easy to copy into target environments for diagnosis
+- **Actionable**: output focuses on concrete failure points and follow-up fixes
+- **Focused**: each tool checks one dependency family well instead of becoming a general platform
 
-### Use Pre-built Binary
+## Tool Matrix
 
-Each tool is a standalone JAR — just download and run:
+| Tool | Target | Language / Runtime | Build Path | Artifact | Main Checks |
+|------|--------|--------------------|------------|----------|-------------|
+| [kerberos-tools](./kerberos-tools) | Kerberos / KDC | Java 8+ | Maven reactor | fat JAR | `krb5.conf`, KDC reachability, keytab inspection, login test |
+| [s3-tools](./s3-tools) | S3-compatible storage | Java 8+ | Maven reactor | fat JAR | credential-source probing, STS identity, bucket/list/put checks |
+| [gcs-tools](./gcs-tools) | GCS XML API | Java 8+ | Maven reactor | fat JAR | HMAC auth, bucket/list, optional write/delete checks |
+| [azure-blob-cpp](./azure-blob-cpp) | Azure Blob Storage | C++17 | standalone CMake project | native binary | container reachability, optional upload/read/delete validation |
 
-```bash
-# 1. Download/copy the JAR to your working directory
-# 2. Create config.properties in the SAME directory
-# 3. Run
-java -jar native-kerberos-tools-jar-with-dependencies.jar
-```
+## Repository Layout
 
-> **Note**: Configuration files must be placed in the same directory as the JAR.
-
-### Build from Source
-
-Prerequisites: Java 8+, Maven 3.x
-
-```bash
-git clone https://github.com/user/Pulse.git
-cd Pulse
-mvn clean package
-```
-
-Output JARs are located in each module's `target/` directory.
-
-## Project Structure
-
-```
+```text
 Pulse/
-├── common/                    # Shared utilities
-│   └── src/main/java/
-├── kerberos-tools/           # Kerberos diagnostic tool
-│   ├── src/main/java/
-│   └── src/main/resources/
-├── s3-tools/                 # S3 connectivity diagnostic tool
-│   ├── src/main/java/
-│   └── src/main/resources/
-├── pom.xml                   # Parent POM
+├── pom.xml                    # Maven reactor for Java modules only
+├── common/                    # Shared Java utilities
+├── kerberos-tools/            # Java Kerberos diagnostics
+├── s3-tools/                  # Java S3 diagnostics
+├── gcs-tools/                 # Java GCS XML API diagnostics
+├── azure-blob-cpp/            # Standalone C++ Azure Blob client
 └── LICENSE
 ```
 
+## Java vs. C++
+
+### Java Track
+
+The Java tools are the main Pulse toolkit. They share code through `common`, are built from the root `pom.xml`, and produce standalone JARs under each module's `target/` directory.
+
+```bash
+mvn clean package
+java -jar gcs-tools/target/native-gcs-tools-jar-with-dependencies.jar
+```
+
+### C++ Track
+
+`azure-blob-cpp` is intentionally separate from the Maven reactor. It uses the Azure SDK for C++, CMake, and `vcpkg`, and produces a native executable rather than a JAR.
+
+```bash
+cd azure-blob-cpp
+./build_linux.sh
+./build/azure_blob_connectivity --mode basic ...
+```
+
+If this split is not documented, users will reasonably assume every module is a Java JAR, which is no longer true.
+
+## Quick Start
+
+### Run a Java Tool
+
+1. Build from the repo root with `mvn clean package`
+2. Go to the target module's `target/` directory
+3. Place `config.properties` next to the generated JAR
+4. Run the module-specific JAR
+
+Example:
+
+```bash
+java -jar s3-tools/target/native-s3-tools-jar-with-dependencies.jar
+```
+
+### Run the Azure Blob Tool
+
+See [`azure-blob-cpp/README.md`](./azure-blob-cpp/README.md) for platform-specific build instructions and runtime arguments.
+
 ## Adding New Tools
 
-Pulse is designed to be extensible. To add a new connectivity tool:
+For a new Java-based diagnostic:
 
 1. Create a new module directory
-2. Add module reference to parent `pom.xml`
-3. Depend on `common` module for shared utilities
-4. Build a standalone JAR with `maven-assembly-plugin`
+2. Add the module to the root [`pom.xml`](./pom.xml)
+3. Reuse `common` for shared logic where appropriate
+4. Package the tool as a standalone JAR
 
-## Contributing
+For a new native tool:
 
-Contributions are welcome! Whether it's:
-
-- New connectivity testing tools
-- Bug fixes and improvements
-- Documentation enhancements
-
-Please feel free to submit issues and pull requests.
+1. Keep it as a clearly separate project directory
+2. Document its runtime/build chain in its own README
+3. Add it to the root matrix so users can see it is not part of the Java reactor
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
