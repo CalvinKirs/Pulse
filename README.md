@@ -6,10 +6,10 @@
 [![Java](https://img.shields.io/badge/Java-8%2B-orange.svg)](https://www.oracle.com/java/)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
 
-Pulse is a repo of small connectivity diagnostics for infrastructure dependencies such as Kerberos and object storage.
+Pulse is a repo of small connectivity diagnostics for infrastructure dependencies such as Kerberos, metastore, and object storage.
 It currently contains two implementation tracks:
 
-- **Java tools**: Maven-managed diagnostic JARs for Kerberos, S3, and GCS
+- **Java tools**: Maven-managed diagnostic JARs for Kerberos, HMS, S3, and GCS
 - **C++ tool**: a standalone Azure Blob client built with CMake/vcpkg
 
 This distinction should be explicit in the README. The build, packaging, and runtime model are different enough that users should not have to infer it from the directory names.
@@ -26,6 +26,7 @@ This distinction should be explicit in the README. The build, packaging, and run
 | Tool | Target | Language / Runtime | Build Path | Artifact | Main Checks |
 |------|--------|--------------------|------------|----------|-------------|
 | [kerberos-tools](./kerberos-tools) | Kerberos / KDC | Java 8+ | Maven reactor | fat JAR | `krb5.conf`, KDC reachability, keytab inspection, login test |
+| [hms-tools](./hms-tools) | Hive Metastore | Java 8+ | Maven reactor | fat JAR | `get_table`, `list_partitions`, `get_all_databases`, latency distribution |
 | [s3-tools](./s3-tools) | S3-compatible storage | Java 8+ | Maven reactor | fat JAR | credential-source probing, STS identity, bucket/list/put checks |
 | [gcs-tools](./gcs-tools) | GCS XML API | Java 8+ | Maven reactor | fat JAR | HMAC auth, bucket/list, optional write/delete checks |
 | [azure-blob-cpp](./azure-blob-cpp) | Azure Blob Storage | C++17 | standalone CMake project | native binary | container reachability, optional upload/read/delete validation |
@@ -37,6 +38,7 @@ Pulse/
 ├── pom.xml                    # Maven reactor for Java modules only
 ├── common/                    # Shared Java utilities
 ├── kerberos-tools/            # Java Kerberos diagnostics
+├── hms-tools/                 # Java Hive Metastore latency diagnostics
 ├── s3-tools/                  # Java S3 diagnostics
 ├── gcs-tools/                 # Java GCS XML API diagnostics
 ├── azure-blob-cpp/            # Standalone C++ Azure Blob client
@@ -47,7 +49,7 @@ Pulse/
 
 ### Java Track
 
-The Java tools are the main Pulse toolkit. They share code through `common`, are built from the root `pom.xml`, and produce standalone JARs under each module's `target/` directory.
+The Java tools are the main Pulse toolkit. They are built from the root `pom.xml` and produce standalone JARs under each module's `target/` directory.
 
 ```bash
 mvn clean package
@@ -72,13 +74,13 @@ If this split is not documented, users will reasonably assume every module is a 
 
 1. Build from the repo root with `mvn clean package`
 2. Go to the target module's `target/` directory
-3. Place `config.properties` next to the generated JAR
+3. Follow the target module's README for configuration style
 4. Run the module-specific JAR
 
 Example:
 
 ```bash
-java -jar s3-tools/target/native-s3-tools-jar-with-dependencies.jar
+java -jar hms-tools/target/native-hms-tools-jar-with-dependencies.jar --help
 ```
 
 ### Run the Azure Blob Tool
