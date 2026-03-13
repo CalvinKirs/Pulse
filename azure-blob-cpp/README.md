@@ -97,6 +97,54 @@ Or full container URL:
   --mode basic
 ```
 
+Custom CA bundle or certificate directory:
+
+```bash
+./build/azure_blob_connectivity \
+  --account-name <account_name> \
+  --account-key <account_key> \
+  --container <container_name> \
+  --mode basic \
+  --ca-info /path/to/custom-ca.pem
+```
+
+Or:
+
+```bash
+./build/azure_blob_connectivity \
+  --account-name <account_name> \
+  --account-key <account_key> \
+  --container <container_name> \
+  --mode basic \
+  --ca-path /path/to/certs
+```
+
+## TLS / Certificate Options
+
+This client supports custom trust material for TLS validation through the Azure SDK curl transport:
+
+- `--ca-info <pem_file>`: use a specific CA bundle file
+- `--ca-path <pem_dir>`: use a directory of CA certificates
+
+Use these options when the storage endpoint is behind a private certificate chain or an internal CA.
+
+## CLI Arguments
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `--account-name` | Yes | Azure storage account name |
+| `--account-key` | Yes | Shared key for the storage account |
+| `--container` | Yes* | Container name |
+| `--container-url` | No* | Full container URL; can be used instead of `--container` |
+| `--endpoint` | No | Endpoint host, default `blob.core.windows.net` |
+| `--mode` | No | `basic` or `rw`, default `basic` |
+| `--prefix` | No | Blob prefix used by `rw` mode |
+| `--ca-info` | No | Custom CA bundle file passed to curl transport |
+| `--ca-path` | No | Custom CA certificate directory passed to curl transport |
+| `--log-level` | No | Azure SDK log level, `0-4`, default `3` |
+
+\* Configure either `--container`, or `--container-url`.
+
 ## Exit codes
 
 - `0`: success

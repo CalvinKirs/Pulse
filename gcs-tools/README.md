@@ -4,7 +4,7 @@
 
 **Native GCS Connectivity Diagnostic Tool**
 
-This module validates Google Cloud Storage connectivity through the XML API using HMAC credentials (`ak` / `sk`).
+This module validates Google Cloud Storage connectivity through the XML API using HMAC credentials (`ak` / `sk`) only.
 
 ## What It Checks
 
@@ -42,6 +42,15 @@ sk=your-hmac-secret-key
 # writeCheckEnabled=true
 # putObjectKey=your-prefix/pulse-gcs-connectivity-check.txt
 ```
+
+## Authentication Scope
+
+This tool only supports GCS XML API HMAC credentials:
+
+- supported: `ak` / `sk`
+- supported aliases: `accessKeyId` / `secretAccessKey`
+- not supported: JSON service-account key files
+- not supported: ADC, OAuth, or other GCP-native auth flows
 
 ## Configuration Reference
 
@@ -93,7 +102,8 @@ sk=your-hmac-secret-key
 
 ## Notes
 
-- This tool is for GCS HMAC interoperability credentials, not JSON service-account keys.
+- This tool is only for GCS HMAC interoperability credentials.
+- JSON service-account key files, ADC, and OAuth flows are intentionally out of scope.
 - The default endpoint is GCS XML API: `https://storage.googleapis.com`.
 - `pathStyle=true` is enabled by default to avoid hostname-style bucket compatibility issues.
 
