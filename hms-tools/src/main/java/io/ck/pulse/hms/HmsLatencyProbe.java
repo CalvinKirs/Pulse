@@ -214,14 +214,14 @@ public class HmsLatencyProbe {
         options.addOption(Option.builder().longOpt("table").hasArg().argName("table")
             .desc("Table name for optional object validation").build());
         options.addOption(Option.builder().longOpt("rpc").hasArg().argName("name")
-            .desc("Basic RPC: get_all_databases, get_database. Default: get_all_databases").build());
+            .desc("Basic RPC: get_all_databases, get_database, get_tables. Default: get_all_databases").build());
         options.addOption(Option.builder().longOpt("fail-fast")
             .desc("Stop after the first fatal failure").build());
     }
 
     private static void addPingOptions(Options options) {
         options.addOption(Option.builder().longOpt("rpc").hasArg().argName("name")
-            .desc("Lightweight RPC: get_all_databases, get_database. Default: get_all_databases").build());
+            .desc("Lightweight RPC: get_all_databases, get_database, get_tables. Default: get_all_databases").build());
         options.addOption(Option.builder().longOpt("db").hasArg().argName("db")
             .desc("Database name for get_database").build());
         options.addOption(Option.builder().longOpt("count").hasArg().argName("N")
@@ -1565,6 +1565,20 @@ public class HmsLatencyProbe {
                 details.put("location_uri", database.getLocationUri());
                 return new RpcPayload(database.getName(), details);
             }
+        },
+        GET_TABLES("get_tables") {
+            @Override
+            RpcPayload execute(IMetaStoreClient client, String dbName) throws Exception {
+                if (dbName == null || dbName.trim().isEmpty()) {
+                    throw new IllegalArgumentException("--db is required for rpc get_tables");
+                }
+                List<String> tables = client.getAllTables(dbName);
+                Map<String, Object> details = new LinkedHashMap<String, Object>();
+                details.put("db", dbName);
+                details.put("table_count", Integer.valueOf(tables.size()));
+                details.put("tables", tables);
+                return new RpcPayload("tables=" + tables.size(), details);
+            }
         };
 
         private final String cliName;
@@ -2089,8 +2103,9 @@ public class HmsLatencyProbe {
             if (tableName != null && (dbName == null || dbName.trim().isEmpty())) {
                 throw new IllegalArgumentException("--db is required when --table is provided");
             }
-            if (rpc == BasicRpc.GET_DATABASE && (dbName == null || dbName.trim().isEmpty())) {
-                throw new IllegalArgumentException("--db is required for rpc get_database");
+            if ((rpc == BasicRpc.GET_DATABASE || rpc == BasicRpc.GET_TABLES)
+                && (dbName == null || dbName.trim().isEmpty())) {
+                throw new IllegalArgumentException("--db is required for rpc " + rpc.cliName);
             }
             return new CheckOptions(rpc, dbName, tableName, commandLine.hasOption("deep"), commandLine.hasOption("fail-fast"));
         }
@@ -2114,8 +2129,9 @@ public class HmsLatencyProbe {
         static PingOptions from(CommandLine commandLine) {
             BasicRpc rpc = BasicRpc.from(commandLine.getOptionValue("rpc", "get_all_databases"));
             String dbName = commandLine.getOptionValue("db");
-            if (rpc == BasicRpc.GET_DATABASE && (dbName == null || dbName.trim().isEmpty())) {
-                throw new IllegalArgumentException("--db is required for rpc get_database");
+            if ((rpc == BasicRpc.GET_DATABASE || rpc == BasicRpc.GET_TABLES)
+                && (dbName == null || dbName.trim().isEmpty())) {
+                throw new IllegalArgumentException("--db is required for rpc " + rpc.cliName);
             }
             return new PingOptions(
                 rpc,
