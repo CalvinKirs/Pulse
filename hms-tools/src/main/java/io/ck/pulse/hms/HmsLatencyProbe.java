@@ -1549,6 +1549,7 @@ public class HmsLatencyProbe {
                 List<String> databases = client.getAllDatabases();
                 Map<String, Object> details = new LinkedHashMap<String, Object>();
                 details.put("database_count", Integer.valueOf(databases.size()));
+                details.put("databases", databases);
                 return new RpcPayload("databases=" + databases.size(), details);
             }
         },
