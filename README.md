@@ -26,7 +26,7 @@ This distinction should be explicit in the README. The build, packaging, and run
 | Tool | Target | Language / Runtime | Build Path | Artifact | Main Checks |
 |------|--------|--------------------|------------|----------|-------------|
 | [kerberos-tools](./kerberos-tools) | Kerberos / KDC | Java 8+ | Maven reactor | fat JAR | `krb5.conf`, KDC reachability, keytab inspection, login test |
-| [hms-tools](./hms-tools) | Hive Metastore | Java 8+ | Maven reactor | fat JAR | `get_table`, `list_partitions`, `get_all_databases`, latency distribution |
+| [hms-tools](./hms-tools) | Hive Metastore | Java 8+ | Maven reactor | fat JAR | `check`, `ping`, `object`, `bench`, auth/config diagnostics |
 | [s3-tools](./s3-tools) | S3-compatible storage | Java 8+ | Maven reactor | fat JAR | credential-source probing, STS identity, bucket/list/put checks |
 | [gcs-tools](./gcs-tools) | GCS XML API | Java 8+ | Maven reactor | fat JAR | HMAC auth, bucket/list, optional write/delete checks |
 | [azure-blob-cpp](./azure-blob-cpp) | Azure Blob Storage | C++17 | standalone CMake project | native binary | container reachability, optional upload/read/delete validation |
@@ -38,7 +38,7 @@ Pulse/
 ├── pom.xml                    # Maven reactor for Java modules only
 ├── common/                    # Shared Java utilities
 ├── kerberos-tools/            # Java Kerberos diagnostics
-├── hms-tools/                 # Java Hive Metastore latency diagnostics
+├── hms-tools/                 # Java Hive Metastore diagnostics and benchmarking
 ├── s3-tools/                  # Java S3 diagnostics
 ├── gcs-tools/                 # Java GCS XML API diagnostics
 ├── azure-blob-cpp/            # Standalone C++ Azure Blob client
